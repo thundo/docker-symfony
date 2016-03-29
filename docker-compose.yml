@@ -1,0 +1,29 @@
+version: '2'
+
+services:
+    symfony:
+        build: ./symfony
+        image: looptribe/symfony
+        volumes:
+            - ./app:/var/www/app
+#            - ./logs/app:/var/www/app/app/logs
+        tty: true
+    db:
+        image: mysql
+        ports:
+            - 3306:3306
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: symfony
+    php-apache:
+        build: ./php-apache
+        image: looptribe/php-apache
+        ports:
+            - 80:80
+            - 443:443
+        volumes_from:
+            - symfony
+        links:
+            - db
+        volumes:
+            - ./logs/apache/:/var/log/apache
